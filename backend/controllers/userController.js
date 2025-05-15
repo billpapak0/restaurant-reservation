@@ -67,3 +67,15 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+//protected route
+exports.getProfile = async (req, res) => {
+  try {
+    res.json({
+      message: 'Welcome to your profile!',
+      user: req.user
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
