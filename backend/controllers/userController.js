@@ -1,6 +1,8 @@
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs');
 const db = require('../config/db');
 
+//register function
 exports.registerUser = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -28,6 +30,38 @@ exports.registerUser = async (req, res) => {
       message: 'User registered successfully',
       userId: result.insertId
     });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+//login function
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password)
+    return res.status(400).json({ message: 'Email and password required' });
+
+  try {
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+
+    if (rows.length === 0)
+      return res.status(401).json({ message: 'Invalid email or password' });
+
+    const user = rows[0];
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch)
+      return res.status(401).json({ message: 'Invalid email or password' });
+
+    const token = jwt.sign(
+      { userId: user.user_id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ message: 'Login successful', token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
