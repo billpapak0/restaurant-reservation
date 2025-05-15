@@ -19,3 +19,5 @@ app.use('/users', userRoutes);
 const restaurantRoutes = require('./routes/restaurantRoutes');
 app.use('/restaurants', restaurantRoutes);
 
+const reservationRoutes = require('./routes/reservationRoutes');
+app.use('/reservations', reservationRoutes);
