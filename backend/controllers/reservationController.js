@@ -20,3 +20,24 @@ exports.createReservation = async (req, res) => {
   }
 };
 
+//gets reservations
+exports.getUserReservations = async (req, res) => {
+  const user_id = req.user.userId;
+
+  try {
+    const [reservations] = await db.query(
+      `SELECT r.reservation_id, r.date, r.time, r.people_count,
+              rest.name AS restaurant_name, rest.location
+       FROM reservations r
+       JOIN restaurants rest ON r.restaurant_id = rest.restaurant_id
+       WHERE r.user_id = ?
+       ORDER BY r.date, r.time`,
+      [user_id]
+    );
+
+    res.json(reservations);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
