@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 
 export const saveToken = async (token: string) => {
   if (Platform.OS === 'web') {
-    localStorage.setItem('userToken', token); // ✅ persist!
+    localStorage.setItem('userToken', token); //persist
   } else {
     await SecureStore.setItemAsync('userToken', token);
   }

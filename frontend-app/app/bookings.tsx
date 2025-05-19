@@ -12,6 +12,7 @@ export default function BookingsScreen() {
       const token = await getToken();
       if (!token) {
         Alert.alert('Not logged in', 'Please login first.');
+        setLoading(false);
         return;
       }
 
@@ -31,11 +32,11 @@ export default function BookingsScreen() {
 
       const fetchBookings = async () => {
   const token = await getToken();
-  console.log('Token loaded:', token); // ✅ Check token
+  console.log('Token loaded:', token); 
 
   if (!token) {
     Alert.alert('Not logged in', 'Please login first.');
-    setLoading(false); // 🛑 Prevent infinite spinner
+    setLoading(false); 
     return;
   }
 
@@ -45,13 +46,13 @@ export default function BookingsScreen() {
         Authorization: `Bearer ${token}`,
       },
     });
-    console.log('Bookings:', res.data); // ✅ Show API response
+    console.log('Bookings:', res.data); //Show API response
     setBookings(res.data);
   } catch (err) {
-    console.error('Error fetching reservations:', err); // 🔥 See error
+    console.error('Error fetching reservations:', err);
     Alert.alert('Error', 'Could not load reservations');
   } finally {
-    setLoading(false); // ✅ This must run or it'll spin forever
+    setLoading(false);
   }
 };
 
@@ -71,19 +72,22 @@ export default function BookingsScreen() {
 
   return (
     <FlatList
-      data={bookings}
-      keyExtractor={(item) => item.reservation_id.toString()}
-      contentContainerStyle={{ padding: 20 }}
-      renderItem={({ item }) => (
-        <View style={styles.card}>
-          <Text style={styles.restaurant}>{item.restaurant_name}</Text>
-          <Text>{item.location}</Text>
-          <Text>{item.date} at {item.time}</Text>
-          <Text>People: {item.people_count}</Text>
-        </View>
-      )}
-      ListEmptyComponent={<Text>No reservations found.</Text>}
-    />
+        data={bookings}
+        keyExtractor={(item) => item.reservation_id.toString()}
+        contentContainerStyle={{ padding: 20 }}
+        renderItem={({ item }) => (
+            <View style={styles.card}>
+            <Text style={styles.restaurant}>{item.restaurant_name}</Text>
+            <Text>{item.location}</Text>
+            <Text>{item.date} at {item.time}</Text>
+            <Text>People: {item.people_count}</Text>
+            </View>
+        )}
+        ListEmptyComponent={
+            <Text style={{ textAlign: 'center', color: '#555' }}>No reservations found or you’re not logged in.</Text>
+        }
+        />
+
   );
 }
 

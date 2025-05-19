@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import axios from 'axios';
+import { deleteToken } from '../lib/token';
+import { router } from 'expo-router';
+import { Button } from 'react-native';
 
 export default function HomeScreen() {
   const [restaurants, setRestaurants] = useState([]);
@@ -31,18 +34,27 @@ export default function HomeScreen() {
   }
 
   return (
-    <FlatList
-      data={restaurants}
-      keyExtractor={(item) => item.restaurant_id.toString()}
-      contentContainerStyle={{ padding: 20 }}
-      renderItem={({ item }) => (
-        <View style={styles.card}>
-          <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.location}>{item.location}</Text>
-          <Text style={styles.description}>{item.description}</Text>
-        </View>
-      )}
-    />
+    <>
+      <View style={{ padding: 20 }}>
+      <Button title="Logout" color="crimson" onPress={async () => {
+        await deleteToken();
+        router.replace('/login');
+      }} />
+      </View>
+
+      <FlatList
+        data={restaurants}
+        keyExtractor={(item) => item.restaurant_id.toString()}
+        contentContainerStyle={{ padding: 20 }}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            <Text style={styles.title}>{item.name}</Text>
+            <Text style={styles.location}>{item.location}</Text>
+            <Text style={styles.description}>{item.description}</Text>
+          </View>
+        )}
+      />
+    </>
   );
 }
 
