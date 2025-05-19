@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
 import { router } from 'expo-router';
+import { getToken } from '../lib/token';
 
 export default function ReserveScreen() {
   const [restaurantId, setRestaurantId] = useState('');
@@ -11,7 +12,11 @@ export default function ReserveScreen() {
 
   const handleReserve = async () => {
     try {
-      const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYmlsbEBleGFtcGxlLmNvbSIsImlhdCI6MTc0NzY5NjY3MSwiZXhwIjoxNzQ3NzAwMjcxfQ.xAPHYvDRWocRfrlawHCGS98wDQeQqSzNNFDVgmnqt-0'; // replace this with SecureStore later
+      const token = await getToken();
+        if (!token) {
+            Alert.alert('Error', 'User not logged in');
+        return;
+        }
 
       const res = await axios.post(
         'http://localhost:5000/reservations',

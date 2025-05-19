@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
 import { router } from 'expo-router';
+import { saveToken } from '../lib/token';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -16,7 +17,9 @@ export default function LoginScreen() {
       });
 
       const token = res.data.token;
-      console.log('JWT Token:', token);
+      await saveToken(token);
+      console.log('Token saved securely');
+
       router.push('/home');
     } catch (err) {
       console.error('Login failed:', err);
