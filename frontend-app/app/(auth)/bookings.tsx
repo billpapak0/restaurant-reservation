@@ -1,7 +1,10 @@
+export const screenOptions = {
+  title: 'My Bookings',
+};
 import { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
-import { getToken } from '../lib/token';
+import { getToken } from '../../lib/token';
 
 export default function BookingsScreen() {
   const [bookings, setBookings] = useState([]);
@@ -10,6 +13,8 @@ export default function BookingsScreen() {
   useEffect(() => {
     const fetchBookings = async () => {
       const token = await getToken();
+      console.log('Token loaded:', token);
+
       if (!token) {
         Alert.alert('Not logged in', 'Please login first.');
         setLoading(false);
@@ -22,6 +27,7 @@ export default function BookingsScreen() {
             Authorization: `Bearer ${token}`,
           },
         });
+        console.log('Bookings:', res.data);
         setBookings(res.data);
       } catch (err) {
         console.error('Error fetching reservations:', err);
@@ -29,33 +35,6 @@ export default function BookingsScreen() {
       } finally {
         setLoading(false);
       }
-
-      const fetchBookings = async () => {
-  const token = await getToken();
-  console.log('Token loaded:', token); 
-
-  if (!token) {
-    Alert.alert('Not logged in', 'Please login first.');
-    setLoading(false); 
-    return;
-  }
-
-  try {
-    const res = await axios.get('http://localhost:5000/reservations/user', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    console.log('Bookings:', res.data); //Show API response
-    setBookings(res.data);
-  } catch (err) {
-    console.error('Error fetching reservations:', err);
-    Alert.alert('Error', 'Could not load reservations');
-  } finally {
-    setLoading(false);
-  }
-};
-
     };
 
     fetchBookings();
@@ -72,22 +51,23 @@ export default function BookingsScreen() {
 
   return (
     <FlatList
-        data={bookings}
-        keyExtractor={(item) => item.reservation_id.toString()}
-        contentContainerStyle={{ padding: 20 }}
-        renderItem={({ item }) => (
-            <View style={styles.card}>
-            <Text style={styles.restaurant}>{item.restaurant_name}</Text>
-            <Text>{item.location}</Text>
-            <Text>{item.date} at {item.time}</Text>
-            <Text>People: {item.people_count}</Text>
-            </View>
-        )}
-        ListEmptyComponent={
-            <Text style={{ textAlign: 'center', color: '#555' }}>No reservations found or you’re not logged in.</Text>
-        }
-        />
-
+      data={bookings}
+      keyExtractor={(item) => item.reservation_id.toString()}
+      contentContainerStyle={{ padding: 20 }}
+      renderItem={({ item }) => (
+        <View style={styles.card}>
+          <Text style={styles.restaurant}>{item.restaurant_name}</Text>
+          <Text>{item.location}</Text>
+          <Text>{item.date} at {item.time}</Text>
+          <Text>People: {item.people_count}</Text>
+        </View>
+      )}
+      ListEmptyComponent={
+        <Text style={{ textAlign: 'center', color: '#555' }}>
+          No reservations found or you’re not logged in.
+        </Text>
+      }
+    />
   );
 }
 

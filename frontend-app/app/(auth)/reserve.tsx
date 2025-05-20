@@ -1,8 +1,11 @@
+export const screenOptions = {
+  title: 'Make a Reservation',
+};
 import { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
 import { router } from 'expo-router';
-import { getToken } from '../lib/token';
+import { getToken } from '../../lib/token';
 
 export default function ReserveScreen() {
   const [restaurantId, setRestaurantId] = useState('');
@@ -11,14 +14,14 @@ export default function ReserveScreen() {
   const [people, setPeople] = useState('');
 
   const handleReserve = async () => {
-    try {
-      const token = await getToken();
-        if (!token) {
-            Alert.alert('Error', 'User not logged in');
-        return;
-        }
+    const token = await getToken();
+    if (!token) {
+      Alert.alert('Not logged in', 'Please login first.');
+      return;
+    }
 
-      const res = await axios.post(
+    try {
+      await axios.post(
         'http://localhost:5000/reservations',
         {
           restaurant_id: parseInt(restaurantId),
@@ -37,7 +40,7 @@ export default function ReserveScreen() {
       router.push('/home');
     } catch (err) {
       console.error(err);
-      Alert.alert('Error', 'Failed to create reservation');
+      Alert.alert('Error', 'Could not create reservation');
     }
   };
 
