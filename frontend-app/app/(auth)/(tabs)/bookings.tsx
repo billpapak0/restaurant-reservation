@@ -6,12 +6,16 @@ import { View, Text, FlatList, ActivityIndicator, Alert, StyleSheet } from 'reac
 import axios from 'axios';
 import { getToken } from '../../../lib/token';
 import Card from '../../../components/Card';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
+
 
 export default function BookingsScreen() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useFocusEffect(
+  useCallback(() => {
     const fetchBookings = async () => {
       const token = await getToken();
       console.log('Token loaded:', token);
@@ -39,7 +43,8 @@ export default function BookingsScreen() {
     };
 
     fetchBookings();
-  }, []);
+  }, [])
+);
 
   if (loading) {
     return (
