@@ -55,6 +55,18 @@ export default function ReserveScreen() {
       return;
     }
 
+    if (!restaurantId || !date || !time || !people) {
+    Alert.alert('Missing info', 'Please fill in all fields before submitting.');
+    return;
+    }
+    console.log('Sending reservation:', {
+    restaurant_id: parseInt(restaurantId),
+    date,
+    time,
+    people_count: parseInt(people),
+    token,
+    });
+
     try {
       await axios.post(
         'http://localhost:5000/reservations',
@@ -71,8 +83,7 @@ export default function ReserveScreen() {
         }
       );
 
-      Alert.alert('Success', 'Reservation created successfully!');
-      router.push('/home');
+      router.replace('/success');
     } catch (err) {
       console.error(err);
       Alert.alert('Error', 'Could not create reservation');
