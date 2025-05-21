@@ -1,50 +1,60 @@
 export const screenOptions = {
   title: 'My Bookings',
 };
-import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, Alert, StyleSheet } from 'react-native';
+
+import { useEffect, useState, useCallback } from 'react';
+import { View, Text, FlatList, ActivityIndicator, Alert, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { getToken } from '../../../lib/token';
 import Card from '../../../components/Card';
 import { useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
-
 
 export default function BookingsScreen() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchBookings = async () => {
+    const token = await getToken();
+    if (!token) {
+      Alert.alert('Not logged in', 'Please login first.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await axios.get('http://localhost:5000/reservations/user', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setBookings(res.data);
+    } catch (err) {
+      console.error('Error fetching reservations:', err);
+      Alert.alert('Error', 'Could not load reservations');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useFocusEffect(
-  useCallback(() => {
-    const fetchBookings = async () => {
-      const token = await getToken();
-      console.log('Token loaded:', token);
+    useCallback(() => {
+      fetchBookings();
+    }, [])
+  );
 
-      if (!token) {
-        Alert.alert('Not logged in', 'Please login first.');
-        setLoading(false);
-        return;
-      }
+  const handleCancel = async (id: number) => {
+    const token = await getToken();
+    if (!token) return;
 
-      try {
-        const res = await axios.get('http://localhost:5000/reservations/user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        console.log('Bookings:', res.data);
-        setBookings(res.data);
-      } catch (err) {
-        console.error('Error fetching reservations:', err);
-        Alert.alert('Error', 'Could not load reservations');
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      await axios.delete(`http://localhost:5000/reservations/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    fetchBookings();
-  }, [])
-);
+      setBookings((prev) => prev.filter((b) => b.reservation_id !== id));
+    } catch (err) {
+      console.error('Cancel failed:', err);
+      Alert.alert('Error', 'Could not cancel reservation');
+    }
+  };
 
   if (loading) {
     return (
@@ -62,20 +72,26 @@ export default function BookingsScreen() {
         keyExtractor={(item) => item.reservation_id.toString()}
         contentContainerStyle={{ padding: 20 }}
         renderItem={({ item }) => (
-          <Card
-            title={item.restaurant_name}
-            subtitle={item.location}
-            body={
-              <>
-                <Text>{item.date} at {item.time}</Text>
-                <Text>People: {item.people_count}</Text>
-              </>
-            }
-          />
-
+          <View style={{ marginBottom: 20 }}>
+            <Card
+              title={item.restaurant_name}
+              subtitle={item.location}
+              body={
+                <>
+                  <Text>{item.date} at {item.time}</Text>
+                  <Text>People: {item.people_count}</Text>
+                </>
+              }
+            />
+            <Button
+              title="Cancel"
+              color="crimson"
+              onPress={() => handleCancel(item.reservation_id)}
+            />
+          </View>
         )}
         ListEmptyComponent={
-          <Text style={{ textAlign: 'center', color: '#555' }}>
+          <Text style={styles.empty}>
             No reservations found or you’re not logged in.
           </Text>
         }
@@ -89,38 +105,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#041B15',
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#eee',
-  },
-  restaurant: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#222',
-    marginBottom: 4,
-  },
-  location: {
-    fontSize: 14,
-    color: '#555',
-  },
-  datetime: {
-    fontSize: 14,
-    color: '#444',
-    marginTop: 8,
-  },
-  people: {
-    fontSize: 14,
-    color: '#444',
-    marginTop: 4,
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   empty: {
     textAlign: 'center',
@@ -128,4 +116,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-

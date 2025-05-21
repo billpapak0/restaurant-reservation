@@ -41,3 +41,28 @@ exports.getUserReservations = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.deleteReservation = async (req, res) => {
+  const { id } = req.params;
+  const user_id = req.user.userId;
+
+  console.log('Attempting to delete reservation:', id, 'for user:', user_id);
+
+  try {
+    const [result] = await db.query(
+      'DELETE FROM reservations WHERE reservation_id = ? AND user_id = ?',
+      [parseInt(id), user_id]
+    );
+
+    if (result.affectedRows === 0) {
+      console.log('Nothing deleted. Query matched 0 rows.');
+      return res.status(404).json({ message: 'Reservation not found or not authorized' });
+    }
+
+    res.json({ message: 'Reservation cancelled successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
