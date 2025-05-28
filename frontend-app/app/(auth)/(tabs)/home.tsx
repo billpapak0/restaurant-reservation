@@ -1,6 +1,4 @@
-export const screenOptions = {
-  title: 'Home',
-};
+
 import { useEffect, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import axios from 'axios';

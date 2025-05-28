@@ -1,6 +1,4 @@
-export const screenOptions = {
-  title: 'Make a Reservation',
-};
+
 import { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';

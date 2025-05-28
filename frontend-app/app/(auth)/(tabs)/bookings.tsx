@@ -1,6 +1,4 @@
-export const screenOptions = {
-  title: 'My Bookings',
-};
+
 
 import { useEffect, useState, useCallback } from 'react';
 import { View, Text, FlatList, ActivityIndicator, Alert, Button, StyleSheet } from 'react-native';
