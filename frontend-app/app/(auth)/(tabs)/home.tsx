@@ -1,13 +1,12 @@
-
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, TextInput, FlatList, ActivityIndicator, StyleSheet } from 'react-native';
 import axios from 'axios';
 import Card from '../../../components/Card';
-
 
 export default function HomeScreen() {
   const [restaurants, setRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -24,6 +23,10 @@ export default function HomeScreen() {
     fetchRestaurants();
   }, []);
 
+  const filtered = restaurants.filter((r) =>
+    `${r.name} ${r.location}`.toLowerCase().includes(search.toLowerCase())
+  );
+
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -35,8 +38,15 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <TextInput
+        placeholder="Search by name or location..."
+        value={search}
+        onChangeText={setSearch}
+        style={styles.search}
+        placeholderTextColor="#888"
+      />
       <FlatList
-        data={restaurants}
+        data={filtered}
         keyExtractor={(item) => item.restaurant_id.toString()}
         contentContainerStyle={{ padding: 20 }}
         renderItem={({ item }) => (
@@ -46,49 +56,38 @@ export default function HomeScreen() {
             body={item.description}
           />
         )}
+        ListEmptyComponent={
+          <Text style={styles.empty}>No restaurants found.</Text>
+        }
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#041B15',
+  },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  card: {
+  search: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 3,
+    margin: 16,
+    borderRadius: 8,
+    padding: 12,
     borderWidth: 1,
-    borderColor: '#eee',
+    borderColor: '#ccc',
+    fontSize: 16,
+    color: '#000',
   },
-  title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#222',
-    marginBottom: 4,
+  empty: {
+    color: '#fff',
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
   },
-  location: {
-    fontSize: 14,
-    color: '#666',
-  },
-  description: {
-    fontSize: 14,
-    color: '#444',
-    marginTop: 8,
-  },
-  container: {
-  flex: 1,
-  backgroundColor: '#041B15',
-  },
-
 });
-

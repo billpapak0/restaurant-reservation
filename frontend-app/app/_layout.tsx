@@ -20,6 +20,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
+        <Stack.Screen name="register" options={{ title: 'Reservation App', headerTitleAlign: 'center' }} />
+        <Stack.Screen name="login" options={{ title: 'Reservation App', headerTitleAlign: 'center' }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
