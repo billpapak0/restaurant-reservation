@@ -54,18 +54,20 @@ npx expo start
 
 ###### Project Structure:
 restaurant-reservation/
-├── backend/           # Express + MySQL backend
-│   ├── controllers/
-│   ├── routes/
-│   ├── config/
-│   ├── server.js
-│   └── schema.sql      # SQL file to create DB tables
-├── frontend-app/      # React Native + Expo frontend
-│   ├── app/
-│   ├── components/
-│   ├── lib/
-│   └── assets/
-└── README.md
+├── backend/ # Express + MySQL backend
+│ ├── controllers/ # Route handlers and business logic
+│ ├── routes/ # Express route definitions
+│ ├── config/ # DB and environment configuration
+│ ├── server.js # Entry point for the backend server
+│ └── schema.sql # SQL file to create DB tables
+│
+├── frontend-app/ # React Native + Expo frontend
+│ ├── app/ # App screens and navigation
+│ ├── components/ # Reusable UI components
+│ ├── lib/ # Utility functions, API calls, etc.
+│ └── assets/ # Images, fonts, and other static resources
+│
+└── README.md # Project overview and setup instructions
 
 ###### Notes:
 Make sure MySQL is running (e.g., via XAMPP).
